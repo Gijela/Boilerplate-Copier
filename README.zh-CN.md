@@ -13,6 +13,83 @@ Boilerplate Copier 是一个强大的工具，用于复制和粘贴样板文件�
 - 易于扩展和定制
 - 支持查看粘贴日志，方便追踪文件的粘贴历史
 
+## 时序图
+
+1. copy 命令
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 用户
+    participant P as Program
+    participant FS as fs-extra
+    participant C as 配置文件
+
+    U->>+P: copy <sourceDir>
+    P->>+FS: writeJson(configFile)
+    alt 写入成功
+        FS-->>-P: 成功
+        P->>U: 显示"Template directory set to..."
+    else 写入失败
+        FS-->>P: 错误
+        P->>U: 显示"Error writing config file"
+    end
+```
+
+2. paste 命令
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 用户
+    participant P as Program
+    participant FS as fs-extra
+    participant C as 配置文件
+    participant L as 日志文件
+
+    U->>+P: paste <targetDir> [-o]
+    P->>+FS: readJson(configFile)
+    alt 读取成功
+        FS-->>-P: 返回sourceDir
+        P->>+FS: ensureDir(targetDir)
+        P->>FS: copy(sourceDir, targetDir)
+        alt 复制成功
+            FS-->>-P: 成功
+            P->>+L: appendFile(paste.log)
+            L-->>-P: 写入成功
+            P->>U: 显示"Pasted boilerplate files..."
+        else 复制失败
+            FS-->>P: 错误
+            P->>U: 显示"Error pasting files"
+        end
+    else 读取失败
+        FS-->>P: 错误
+        P->>U: 显示"Source directory not set"
+    end
+```
+
+3. log  命令
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 用户
+    participant P as Program
+    participant FS as fs-extra
+    participant L as 日志文件
+
+    U->>+P: log
+    P->>+FS: readFile(paste.log)
+    alt 读取成功
+        FS-->>-P: 返回日志内容
+        P->>U: 显示日志内容
+    else 读取失败
+        FS-->>P: 错误
+        P->>U: 显示"Error reading log file"
+    end
+
+```
+
 ## 安装
 
 全局安装:

@@ -13,6 +13,82 @@ Boilerplate Copier is a powerful tool for copying and pasting boilerplate files,
 - Easy to extend and customize
 - Support for viewing paste logs, making it convenient to track file paste history
 
+## Sequence Diagrams
+
+1. copy command
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant P as Program
+    participant FS as fs-extra
+    participant C as Config File
+
+    U->>+P: copy <sourceDir>
+    P->>+FS: writeJson(configFile)
+    alt Success
+        FS-->>-P: Success
+        P->>U: Show "Template directory set to..."
+    else Failure
+        FS-->>P: Error
+        P->>U: Show "Error writing config file"
+    end
+```
+
+2. paste command
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant P as Program
+    participant FS as fs-extra
+    participant C as Config File
+    participant L as Log File
+
+    U->>+P: paste <targetDir> [-o]
+    P->>+FS: readJson(configFile)
+    alt Success
+        FS-->>-P: Return sourceDir
+        P->>+FS: ensureDir(targetDir)
+        P->>FS: copy(sourceDir, targetDir)
+        alt Copy Success
+            FS-->>-P: Success
+            P->>+L: appendFile(paste.log)
+            L-->>-P: Write Success
+            P->>U: Show "Pasted boilerplate files..."
+        else Copy Failure
+            FS-->>P: Error
+            P->>U: Show "Error pasting files"
+        end
+    else Read Failure
+        FS-->>P: Error
+        P->>U: Show "Source directory not set"
+    end
+```
+
+3. log command
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant P as Program
+    participant FS as fs-extra
+    participant L as Log File
+
+    U->>+P: log
+    P->>+FS: readFile(paste.log)
+    alt Success
+        FS-->>-P: Return log content
+        P->>U: Show log content
+    else Failure
+        FS-->>P: Error
+        P->>U: Show "Error reading log file"
+    end
+```
+
 ## Installation
 
 Global installation:
