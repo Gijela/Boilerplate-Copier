@@ -13,7 +13,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "commander": "^12.1.0",
-    "fs-extra": "^11.2.0"
+    "commander": "^9.5.0",
+    "fs-extra": "^10.1.0"
+  },
+  "engines": {
+    "node": ">=12"
   }
 }
